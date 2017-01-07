@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "system",
+    "noImplicitAny": false,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "target": "es5",
+    "sourceMap": true,
+    "rootDir": "ts",
+    "outFile": "dist/js/game.js"
+  },
+  "exclude": [
+    "node_modules",
+    "bower_components"
+  ],
+  "files": [
+    "ts/galaxy.ts",
+    "ts/planet.ts"
+  ]
+}

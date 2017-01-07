@@ -1,0 +1,22 @@
+{
+  "name": "galaxy_babylon",
+  "version": "0.0.1",
+  "description": "Galaxy implemented with BabylonJS",
+  "author": "Dmitry Makhov",
+  "license": "MIT",
+  "repository": "",
+  "scripts": {
+    "start": "tsc && concurrently \"tsc -w\" \"lite-server -c configs/bs-config.json\" ",
+    "lite": "lite-server -c configs/bs-config.json",
+    "tsc": "tsc",
+    "tsc:w": "tsc -w"
+  },
+  "devDependencies": {
+    "brew": "latest",
+    "concurrently": "latest",
+    "http-server": "latest",
+    "lite-server": "latest",
+    "browser-sync": "latest",
+    "typescript": "latest"
+  }
+}
