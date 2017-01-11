@@ -1,10 +1,10 @@
 {
-  "name": "galaxy_babylon",
+  "name": "rulethegalaxy",
   "version": "0.0.1",
   "description": "Galaxy implemented with BabylonJS",
   "author": "Dmitry Makhov",
   "license": "MIT",
-  "repository": "",
+  "repository": "https://github.com/doncasper/rulethegalaxy",
   "scripts": {
     "start": "tsc && concurrently \"tsc -w\" \"lite-server -c configs/bs-config.json\" ",
     "lite": "lite-server -c configs/bs-config.json",
