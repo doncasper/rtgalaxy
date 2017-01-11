@@ -1,5 +1,5 @@
-Galaxy Babylon
-==============
+Rule The Galaxy
+===============
 
 Installation requirements
 -------------------------
@@ -12,6 +12,7 @@ Run application
 ---------------
 
 ```
-$ npm install
 $ npm start
 ```
+
+This command compile the application, run the server and open game in browser.
