@@ -5,8 +5,7 @@ Installation requirements
 -------------------------
 
 ```
-$ npm install -g bower
-$ npm install -g gulp-cli
+$ npm install
 ```
 
 Run application
@@ -14,6 +13,5 @@ Run application
 
 ```
 $ npm install
-$ bower install
 $ npm start
 ```

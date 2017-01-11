@@ -12,11 +12,11 @@
     "tsc:w": "tsc -w"
   },
   "devDependencies": {
-    "brew": "latest",
-    "concurrently": "latest",
-    "http-server": "latest",
-    "lite-server": "latest",
-    "browser-sync": "latest",
-    "typescript": "latest"
+    "babylonjs": "^2.5.0",
+    "handjs": "^1.3.11",
+    "concurrently": "^3.1.0",
+    "lite-server": "^2.2.2",
+    "browser-sync": "^2.18.6",
+    "typescript": "^2.1.4"
   }
 }

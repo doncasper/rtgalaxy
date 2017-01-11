@@ -1,77 +1,114 @@
-var elements = 16;
+var segments = 16;
 var k = 1.6568542;
-var orbitColor = new BABYLON.Color3(0.25, 0.25, 0.45);
+var orbitColor = new BABYLON.Color3(0.25, 0.25, 0.25);
+var sizeScale = 10000;
+var speedScale = 10000;
+var orbitScale = 10;
 var Planet = (function () {
-    function Planet(scene, name, distance, size, speed, angle) {
+    function Planet(scene, name, orbitSize, size, speed, angle) {
         var _this = this;
         this._scene = scene;
-        this._radius = distance;
-        this._speed = speed;
+        this._name = name;
+        this._size = size / sizeScale;
+        this._orbitSize = orbitSize / orbitScale;
+        this._speed = speed / speedScale;
         this._angle = angle;
-        this._planet = BABYLON.Mesh.CreateSphere(name, elements, size, scene);
-        this._planet.position.x = distance;
-        this._getOrbitCurve();
-        this._moveByOrbit();
+        this._tangent = this._orbitSize * k;
+        this._planet = BABYLON.Mesh.CreateSphere(this._name, segments, this._size, this._scene);
+        this._planet.position.x = this._orbitSize;
+        this._showOrbitCurve();
+        this._setColor();
+        this._hl = new BABYLON.HighlightLayer(this._name + "_hl", this._scene);
+        this._planet.actionManager = new BABYLON.ActionManager(this._scene);
+        this._planet.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function (evt) {
+            _this._hl.addMesh(_this._planet, BABYLON.Color3.Green());
+        }));
         this._scene.registerBeforeRender(function () { _this._moveByOrbit(); });
     }
+    Planet.prototype._setColor = function () {
+        this._material = new BABYLON.StandardMaterial(this._name + "Color", this._scene);
+        this._material.alpha = 1;
+        this._material.diffuseColor = new BABYLON.Color3(1, 1, 2);
+        this._planet.material = this._material;
+    };
     Planet.prototype._moveByOrbit = function () {
-        this._planet.position.x = this._radius * Math.sin(this._angle);
-        this._planet.position.z = this._radius * Math.cos(this._angle);
+        this._planet.position.x = this._orbitSize * Math.sin(this._angle);
+        this._planet.position.z = this._orbitSize * Math.cos(this._angle);
         this._angle += this._speed;
     };
-    Planet.prototype._getOrbitCurve = function () {
-        var tangent = this._radius * k;
-        var hermite1 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(this._radius, 0, 0), new BABYLON.Vector3(0, 0, tangent), new BABYLON.Vector3(0, 0, this._radius), new BABYLON.Vector3(-tangent, 0, 0), 20);
-        var hermite2 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(0, 0, this._radius), new BABYLON.Vector3(-tangent, 0, 0), new BABYLON.Vector3(-this._radius, 0, 0), new BABYLON.Vector3(0, 0, -tangent), 20);
-        var hermite3 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(-this._radius, 0, 0), new BABYLON.Vector3(0, 0, -tangent), new BABYLON.Vector3(0, 0, -this._radius), new BABYLON.Vector3(tangent, 0, 0), 20);
-        var hermite4 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(0, 0, -this._radius), new BABYLON.Vector3(tangent, 0, 0), new BABYLON.Vector3(this._radius, 0, 0), new BABYLON.Vector3(0, 0, tangent), 20);
-        var myFullCurve = hermite1.continue(hermite2).continue(hermite3).continue(hermite4);
-        var hermiteCurve = BABYLON.Mesh.CreateLines("hermiteCurve", myFullCurve.getPoints(), this._scene);
-        hermiteCurve.color = orbitColor;
+    Planet.prototype._showOrbitCurve = function () {
+        var hermite1 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(this._orbitSize, 0, 0), new BABYLON.Vector3(0, 0, this._tangent), new BABYLON.Vector3(0, 0, this._orbitSize), new BABYLON.Vector3(-this._tangent, 0, 0), segments);
+        var hermite2 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(0, 0, this._orbitSize), new BABYLON.Vector3(-this._tangent, 0, 0), new BABYLON.Vector3(-this._orbitSize, 0, 0), new BABYLON.Vector3(0, 0, -this._tangent), segments);
+        var hermite3 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(-this._orbitSize, 0, 0), new BABYLON.Vector3(0, 0, -this._tangent), new BABYLON.Vector3(0, 0, -this._orbitSize), new BABYLON.Vector3(this._tangent, 0, 0), segments);
+        var hermite4 = BABYLON.Curve3.CreateHermiteSpline(new BABYLON.Vector3(0, 0, -this._orbitSize), new BABYLON.Vector3(this._tangent, 0, 0), new BABYLON.Vector3(this._orbitSize, 0, 0), new BABYLON.Vector3(0, 0, this._tangent), segments);
+        var orbitCurve = hermite1.continue(hermite2).continue(hermite3).continue(hermite4);
+        var orbit = BABYLON.Mesh.CreateLines(this._name + "Orbit", orbitCurve.getPoints(), this._scene);
+        orbit.color = orbitColor;
     };
     return Planet;
 }());
 var _this = this;
 var planets = [
     {
-        "name": "planet1",
-        "distance": 5,
-        "size": 1,
-        "speed": 0.006,
+        "name": "mercury",
+        "distance": 34.5,
+        "size": 2439,
+        "speed": 47.36,
         "angle": 0
     },
     {
-        "name": "planet2",
-        "distance": 8,
-        "size": 1.3,
-        "speed": 0.009,
+        "name": "venus",
+        "distance": 54,
+        "size": 6051,
+        "speed": 35.02,
         "angle": 3.1
     },
     {
-        "name": "planet3",
-        "distance": 11,
-        "size": 1.7,
-        "speed": 0.0034,
+        "name": "earth",
+        "distance": 76,
+        "size": 6378,
+        "speed": 29.78,
         "angle": 4.6
     },
     {
-        "name": "planet4",
-        "distance": 14,
-        "size": 2,
-        "speed": 0.0028,
+        "name": "mars",
+        "distance": 124,
+        "size": 3396,
+        "speed": 24.13,
         "angle": 5.3
     },
     {
-        "name": "planet5",
-        "distance": 17,
-        "size": 1.7,
+        "name": "jupiter",
+        "distance": 408,
+        "size": 71492,
         "speed": 0.0019,
         "angle": 5.7
+    },
+    {
+        "name": "saturn",
+        "distance": 756.5,
+        "size": 60268,
+        "speed": 0.0021,
+        "angle": 4.7
+    },
+    {
+        "name": "uranus",
+        "distance": 1502,
+        "size": 25559,
+        "speed": 0.0016,
+        "angle": 3.7
+    },
+    {
+        "name": "neptune",
+        "distance": 2276.5,
+        "size": 24764,
+        "speed": 0.0015,
+        "angle": 2.7
     }
 ];
 var Galaxy = (function () {
     function Galaxy(canvas) {
-        this._engine = new BABYLON.Engine(canvas);
+        this._engine = new BABYLON.Engine(canvas, true, { stencil: true });
         this._scene = new BABYLON.Scene(this._engine);
         this._scene.clearColor = new BABYLON.Color3(.08, .08, .1);
         this._setUpCamera(canvas);
@@ -90,6 +127,17 @@ var Galaxy = (function () {
     };
     Galaxy.prototype.resize = function () {
         this._engine.resize();
+    };
+    Galaxy.prototype._createPlayer = function () {
+        var playerColor = new BABYLON.StandardMaterial("texturePlayer", this._scene);
+        playerColor.alpha = 1;
+        playerColor.diffuseColor = new BABYLON.Color3(0, 3, 0);
+        var player = BABYLON.Mesh.CreateBox('player', 0.3, this._scene);
+        player.material = playerColor;
+        player.position.x = 10;
+        player.position.y = 0;
+        player.actionManager = new BABYLON.ActionManager(this._scene);
+        player.actionManager.registerAction(new BABYLON.IncrementValueAction(BABYLON.ActionManager.OnPickTrigger, player, "position.x", 3));
     };
     Galaxy.prototype._setUpSkyBox = function () {
         var skybox = BABYLON.Mesh.CreateBox('skybox', 1000, this._scene);
@@ -111,13 +159,13 @@ var Galaxy = (function () {
         this._bottomLight.specular = new BABYLON.Color3(0, 0, 0);
     };
     Galaxy.prototype._setUpCamera = function (canvas) {
-        this._camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 1, 20, BABYLON.Vector3.Zero(), this._scene);
+        this._camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 1, 350, BABYLON.Vector3.Zero(), this._scene);
         this._camera.attachControl(canvas, true);
         this._camera.lowerBetaLimit = 0.1;
         this._camera.upperBetaLimit = (Math.PI / 2) * 0.9;
         this._camera.lowerRadiusLimit = 3;
-        this._camera.upperRadiusLimit = 55;
-        this._camera.wheelPrecision = 10;
+        this._camera.upperRadiusLimit = 500;
+        this._camera.wheelPrecision = 20;
     };
     Galaxy.prototype._createPlanet = function (name, distance, size, speed, angle) {
         new Planet(this._scene, name, distance, size, speed, angle);

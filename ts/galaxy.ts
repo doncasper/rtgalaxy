@@ -1,41 +1,62 @@
-/// <reference path="../bower_components/babylonjs/dist/babylon.2.5.d.ts" />
-/// <reference path="./planet.ts" />
+/// <reference path="../node_modules/babylonjs/babylon.d.ts" />
+/// <reference path="./celestials/planets/planet.ts" />
 
 const planets: any = [
     {
-        "name": "planet1",
-        "distance": 5,
-        "size": 1,
-        "speed": 0.006,
+        "name": "mercury",
+        "distance": 34.5,
+        "size": 2439,
+        "speed": 47.36,
         "angle": 0
     },
     {
-        "name": "planet2",
-        "distance": 8,
-        "size": 1.3,
-        "speed": 0.009,
+        "name": "venus",
+        "distance": 54,
+        "size": 6051,
+        "speed": 35.02,
         "angle": 3.1
     },
     {
-        "name": "planet3",
-        "distance": 11,
-        "size": 1.7,
-        "speed": 0.0034,
+        "name": "earth",
+        "distance": 76,
+        "size": 6378,
+        "speed": 29.78,
         "angle": 4.6
     },
     {
-        "name": "planet4",
-        "distance": 14,
-        "size": 2,
-        "speed": 0.0028,
+        "name": "mars",
+        "distance": 124,
+        "size": 3396,
+        "speed": 24.13,
         "angle": 5.3
     },
     {
-        "name": "planet5",
-        "distance": 17,
-        "size": 1.7,
+        "name": "jupiter",
+        "distance": 408,
+        "size": 71492,
         "speed": 0.0019,
         "angle": 5.7
+    },
+    {
+        "name": "saturn",
+        "distance": 756.5,
+        "size": 60268,
+        "speed": 0.0021,
+        "angle": 4.7
+    },
+    {
+        "name": "uranus",
+        "distance": 1502,
+        "size": 25559,
+        "speed": 0.0016,
+        "angle": 3.7
+    },
+    {
+        "name": "neptune",
+        "distance": 2276.5,
+        "size": 24764,
+        "speed": 0.0015,
+        "angle": 2.7
     }
 ];
 
@@ -48,7 +69,7 @@ class Galaxy {
     private _bottomLight: BABYLON.HemisphericLight;
 
     constructor(canvas: HTMLCanvasElement) {
-        this._engine = new BABYLON.Engine(canvas);
+        this._engine = new BABYLON.Engine(canvas, true, { stencil: true });
         this._scene = new BABYLON.Scene(this._engine);
         this._scene.clearColor = new BABYLON.Color3(.08, .08, .1);
 
@@ -63,6 +84,10 @@ class Galaxy {
             let planet = planets[i];
             this._createPlanet(planet.name, planet.distance, planet.size, planet.speed, planet.angle);
         }
+
+        // this._createPlayer();
+
+        // BABYLON.SceneOptimizer.OptimizeAsync(this._scene);
     }
 
     public runRenderLoop(): void {
@@ -73,6 +98,23 @@ class Galaxy {
 
     public resize(): void {
         this._engine.resize();
+    }
+
+    private _createPlayer(): void {
+        let playerColor = new BABYLON.StandardMaterial("texturePlayer", this._scene);
+        playerColor.alpha = 1;
+        playerColor.diffuseColor = new BABYLON.Color3(0, 3, 0);
+
+        let player = BABYLON.Mesh.CreateBox('player', 0.3, this._scene);
+        player.material = playerColor;
+        player.position.x = 10;
+        player.position.y = 0;
+
+
+        player.actionManager = new BABYLON.ActionManager(this._scene);
+        player.actionManager.registerAction(
+            new BABYLON.IncrementValueAction(BABYLON.ActionManager.OnPickTrigger, player, "position.x", 3)
+        );
     }
 
     private _setUpSkyBox(): void {
@@ -109,15 +151,15 @@ class Galaxy {
     private _setUpCamera(canvas: HTMLCanvasElement): void {
         // ArcRotateCamera >> Camera turning around a 3D point (here Vector zero) with mouse and cursor keys
         // Parameters : name, alpha, beta, radius, target, scene
-        this._camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 1, 20, BABYLON.Vector3.Zero(), this._scene);
+        this._camera = new BABYLON.ArcRotateCamera("ArcRotateCamera", 1, 1, 350, BABYLON.Vector3.Zero(), this._scene);
 
         // attach the camera to the canvas
         this._camera.attachControl(canvas, true);
         this._camera.lowerBetaLimit = 0.1;
         this._camera.upperBetaLimit = (Math.PI / 2) * 0.9;
         this._camera.lowerRadiusLimit = 3;
-        this._camera.upperRadiusLimit = 55;
-        this._camera.wheelPrecision = 10;
+        this._camera.upperRadiusLimit = 500;
+        this._camera.wheelPrecision = 20;
     }
 
     private _createPlanet(name: string, distance: number, size: number, speed: number, angle: number): void {

@@ -15,6 +15,6 @@
   ],
   "files": [
     "ts/galaxy.ts",
-    "ts/planet.ts"
+    "ts/celestials/planets/planet.ts"
   ]
 }
