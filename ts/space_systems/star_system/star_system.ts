@@ -1,4 +1,5 @@
 /// <reference path="../../../node_modules/babylonjs/babylon.d.ts" />
 
-
-class PlanetarySystem {}
+module STAR_SYSTEM {
+    class StarSystem {}
+}

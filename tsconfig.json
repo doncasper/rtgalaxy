@@ -14,7 +14,6 @@
     "bower_components"
   ],
   "files": [
-    "ts/galaxy.ts",
-    "ts/celestials/planets/planet.ts"
+    "ts/game.ts"
   ]
 }
